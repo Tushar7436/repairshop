@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import "tailwindcss-animate";
 
 const config: Config = {
 	darkMode: ["class"],
