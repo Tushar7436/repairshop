@@ -24,10 +24,10 @@ export default async function CustomerFormPage({
                 )
             }
             console.log(customer)
-            // put customer form component 
+            // put customer
             return <CustomerForm customer={customer} />
         } else {
-            // new customer form component 
+            // new customer
             return <CustomerForm />
         }
 

@@ -2,20 +2,20 @@ import { pgTable, serial, varchar, boolean, timestamp, integer, text } from "dri
 import { relations } from "drizzle-orm"
 
 export const customers = pgTable("customers", {
-    id : serial("id").primaryKey(),
-    firstname : varchar("first_name").notNull(),
-    lastname : varchar("last_name").notNull(),
-    email : varchar("email").unique().notNull(),
-    phone : varchar("phone").unique().notNull(),
-    address1 : varchar("address1").notNull(),
-    address2 : varchar("address2"),
-    city : varchar("city").notNull(),
-    state : varchar("state",{ length:2 }).notNull(),
-    zip : varchar("zip",{ length: 10 }).notNull(),
+    id: serial("id").primaryKey(),
+    firstName: varchar("first_name").notNull(),
+    lastName: varchar("last_name").notNull(),
+    email: varchar("email").unique().notNull(),
+    phone: varchar("phone").unique().notNull(),
+    address1: varchar("address1").notNull(),
+    address2: varchar("address2"),
+    city: varchar("city").notNull(),
+    state: varchar("state", { length: 2 }).notNull(),
+    zip: varchar("zip", { length: 10 }).notNull(),
     notes: text("notes"),
     active: boolean("active").notNull().default(true),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(). $onUpdate(() => new Date()),
+    updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 })
 
 export const tickets = pgTable("tickets", {
@@ -29,14 +29,13 @@ export const tickets = pgTable("tickets", {
     updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 })
 
-//Create relations
-export const customersRelations = relations(customers, 
+export const customersRelations = relations(customers,
     ({ many }) => ({
         tickets: many(tickets),
     })
 )
 
-export const ticketsRelations = relations(tickets, 
+export const ticketsRelations = relations(tickets,
     ({ one }) => ({
         customer: one(customers, {
             fields: [tickets.customerId],

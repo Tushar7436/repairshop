@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   title:{
       template: '%s | Tushar Repair Shop',
       default: 'Tushar Repair Shop'
