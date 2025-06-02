@@ -2,14 +2,15 @@
 
 import { useFormContext } from "react-hook-form"
 
-import { 
+import {
     FormControl,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
+
+import { Textarea } from "@/components/ui/textarea"
 import { TextareaHTMLAttributes } from "react"
 
 type Props<S> = {
@@ -23,23 +24,23 @@ export function TextAreaWithLabel<S>({
 }: Props<S>) {
     const form = useFormContext()
 
-    return(
-            <FormField 
+    return (
+        <FormField
             control={form.control}
             name={nameInSchema}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel
-                        className="text-base"
+                        className="text-base mb-2"
                         htmlFor={nameInSchema}
                     >
                         {fieldTitle}
                     </FormLabel>
 
                     <FormControl>
-                        <Textarea 
+                        <Textarea
                             id={nameInSchema}
-                            className={className}
+                            className={`disabled:text-blue-500 dark:disabled:text-yellow-300 disabled:opacity-75 ${className}`}
                             {...props}
                             {...field}
                         />
