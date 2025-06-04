@@ -16,6 +16,8 @@ import { StatesArray } from "@/constants/StatesArray"
 
 import { insertCustomerSchema, type insertCustomerSchemaType, type selectCustomerSchemaType } from "@/zod-schemas/customer"
 
+import { useAction } from 'next-safe-action/hooks'
+import { saveCustomerAction } from "@/app/actions/saveCustomerActions"
 
 type Props = {
     customer?: selectCustomerSchemaType,
@@ -44,6 +46,20 @@ export default function CustomerForm({ customer }: Props) {
         mode: 'onBlur',
         resolver: zodResolver(insertCustomerSchema),
         defaultValues,
+    })
+
+    const { 
+        excute: executeSave,
+        result: saveResult,
+        isExecuting: isSaving,
+        reset: resetSaveAction,
+    } = useAction(saveCustomerAction, {
+        onSuccess({ data }){
+            //toast user
+        },
+        onError({ error }) {
+            //toast user 
+        }
     })
 
     async function submitForm(data: insertCustomerSchemaType) {
@@ -127,10 +143,10 @@ export default function CustomerForm({ customer }: Props) {
                                 message="Yes"
                             />) : null}
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-center mt-4">
                             <Button
                                 type="submit"
-                                className="w-3/4"
+                                className="w-1/4 border border-destructive bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                                 variant="default"
                                 title="Save"
                             >
@@ -141,6 +157,7 @@ export default function CustomerForm({ customer }: Props) {
                                 type="button"
                                 variant="destructive"
                                 title="Reset"
+                                className="border border-destructive bg-background text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
                                 onClick={() => form.reset(defaultValues)}
                             >
                                 Reset
