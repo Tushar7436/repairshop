@@ -1,11 +1,11 @@
 import { createSafeActionClient } from 'next-safe-action'
-import { z } from 'zod';
+import { z } from 'zod'
 import * as Sentry from '@sentry/nextjs'
 
 export const actionClient = createSafeActionClient({
-    defineMetadataSchema(){
+    defineMetadataSchema() {
         return z.object({
-            actionName:z.string(),
+            actionName: z.string(),
         })
     },
     handleServerError(e, utils) {
@@ -13,13 +13,13 @@ export const actionClient = createSafeActionClient({
         Sentry.captureException(e, (scope) => {
             scope.clear()
             scope.setContext('serverError', { message: e.message })
-            scope.setContext('serverError', { message: metadata?.actionName })
-            scope.setContext('ClientInput', { clientInput })
+            scope.setContext('metadata', { actionName: metadata?.actionName })
+            scope.setContext('clientInput', { clientInput })
             return scope
         })
-        if (e.constructor.name === 'DatabaseErro'){
-            return "Db Error: Your data did not save. Support will be notified."
-        }    
+        if (e.constructor.name === 'NeonDbError') {
+            return "Database Error: Your data did not save. Support will be notified."
+        }
         return e.message
     }
 })
