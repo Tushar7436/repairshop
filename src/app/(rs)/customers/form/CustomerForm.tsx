@@ -18,6 +18,10 @@ import { insertCustomerSchema, type insertCustomerSchemaType, type selectCustome
 
 import { useAction } from 'next-safe-action/hooks'
 import { saveCustomerAction } from "@/app/actions/saveCustomerActions"
+import { useToast } from '@/hooks/use-toast'
+import { LoaderCircle } from 'lucide-react'
+import { DisplayServerActionResponse } from "@/components/DsiplayServerActionResponse"
+
 
 type Props = {
     customer?: selectCustomerSchemaType,
@@ -26,6 +30,8 @@ type Props = {
 export default function CustomerForm({ customer }: Props) {
     const { getPermission, isLoading } = useKindeBrowserClient()
     const isManager = !isLoading && getPermission('manager')?.isGranted
+
+    const { toast } = useToast()
 
     const defaultValues: insertCustomerSchemaType = {
         id: customer?.id ?? 0,
@@ -49,25 +55,35 @@ export default function CustomerForm({ customer }: Props) {
     })
 
     const { 
-        excute: executeSave,
+        execute: executeSave,
         result: saveResult,
         isExecuting: isSaving,
         reset: resetSaveAction,
     } = useAction(saveCustomerAction, {
         onSuccess({ data }){
-            //toast user
+            toast({
+                variant: "default",
+                title: "Success",
+                description: data?.message,
+            })
         },
         onError({ error }) {
-            //toast user 
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Save Failed",
+            })
         }
     })
 
     async function submitForm(data: insertCustomerSchemaType) {
-        console.log(data)
+        executeSave(data)
+        //console.log(data)
     }
 
     return (
         <div className="flex flex-col gap-1 sm:px-8">
+            <DisplayServerActionResponse result ={saveResult} />
             <div>
                 <h2 className="text-2xl font-bold">
                     {customer?.id ? "Edit" : "New"} Customer {customer?.id ? `#${customer.id}` : "Form"}
@@ -149,8 +165,13 @@ export default function CustomerForm({ customer }: Props) {
                                 className="w-1/4 border border-destructive bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                                 variant="default"
                                 title="Save"
+                                disabled={isSaving}
                             >
-                                Save
+                                {isSaving? (
+                                    <>
+                                    <LoaderCircle className="animate-splin" /> Saving
+                                    </>
+                                ) : "Save"}
                             </Button>
 
                             <Button
@@ -158,14 +179,15 @@ export default function CustomerForm({ customer }: Props) {
                                 variant="destructive"
                                 title="Reset"
                                 className="border border-destructive bg-background text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
-                                onClick={() => form.reset(defaultValues)}
+                                onClick={() => { 
+                                    form.reset(defaultValues)
+                                    resetSaveAction()
+                                }}
                             >
                                 Reset
                             </Button>
                         </div>
-
                     </div>
-
                 </form>
             </Form>
 
