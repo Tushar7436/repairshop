@@ -1,30 +1,34 @@
 import TicketSearch from "./TicketSearch/TicketSearch"
-
+import { getOpenTickets } from "@/lib/queries/getOpenTickets"
+import { getTicketSearchResults } from "@/lib/queries/getTicketSearchResults"
 
 export const metadata = {
-    title: "tickets Search",
+    title: "Ticket Search",
 }
 
-export default async function tickets({  
+export default async function Tickets({
     searchParams,
 }: {
     searchParams: Promise<{ [key: string]: string | undefined }>
-})  {
+}) {
     const { searchText } = await searchParams
 
     if (!searchText) {
-        // query default results
+        const results = await getOpenTickets()
         return (
             <>
                 <TicketSearch />
-                <p> {JSON.stringify("placeholder")}</p>
+                <p>{JSON.stringify(results)}</p>
             </>
         )
     }
 
-    // query search result
+    const results = await getTicketSearchResults(searchText)
 
-
-    //return search results
-    
+    return (
+        <>
+            <TicketSearch />
+            <p>{JSON.stringify(results)}</p>
+        </>
+    )
 }
