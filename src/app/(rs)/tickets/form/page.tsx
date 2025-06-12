@@ -1,192 +1,127 @@
-"use client"
+import { getCustomer } from "@/lib/queries/getCustomer";
+import { getTicket } from "@/lib/queries/getTicket";
+import { BackButton } from "@/components/BackButton";
+import * as Sentry from "@sentry/nextjs"
+import TicketForm from "@/app/(rs)/tickets/form/TicketForm";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Form } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-import { InputWithLabel } from "@/components/inputs/InputWithLabel"
-import { SelectWithLabel } from "@/components/inputs/SelectWithLabel"
-import { TextAreaWithLabel } from "@/components/inputs/TextAreaWithLabel"
-import { CheckboxWithLabel } from "@/components/inputs/CheckboxWithLabel"
+import { Users, init as kindeInit } from "@kinde/management-api-js"
 
-import { insertTicketSchema, type insertTicketSchemaType, type selectTicketSchemaType } from "@/zod-schemas/ticket"
-import { selectCustomerSchemaType } from "@/zod-schemas/customer"
+export async function generateMetadata({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
+    const { customerId, ticketId } = await searchParams
 
-import { useAction } from 'next-safe-action/hooks'
-import { saveTicketAction } from "@/app/actions/saveTicketAction"
-import { useToast } from '@/hooks/use-toast'
-import { LoaderCircle } from 'lucide-react'
-import { DisplayServerActionResponse } from "@/components/DsiplayServerActionResponse"
+    if (!customerId && !ticketId) return {
+        title: 'Missing Ticket ID or Customer ID'
+    }
 
-type Props = {
-    customer: selectCustomerSchemaType,
-    ticket?: selectTicketSchemaType,
-    techs?: {
-        id: string,
-        description: string,
-    }[],
-    isEditable?: boolean,
-    isManager?: boolean | undefined
+    if (customerId) return {
+        title: `New Ticket for Customer #${customerId}`
+    }
+
+    if (ticketId) return {
+        title: `Edit Ticket #${ticketId}`
+    }
 }
 
-export default function TicketForm({
-    customer, ticket, techs, isEditable = true, isManager = false
-}: Props) {
+export default async function TicketFormPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
+    try {
 
-    const { toast } = useToast()
+        const { customerId, ticketId } = await searchParams
 
-    const defaultValues: insertTicketSchemaType = {
-        id: ticket?.id ?? "(New)",
-        customerId: ticket?.customerId ?? customer.id,
-        title: ticket?.title ?? '',
-        description: ticket?.description ?? '',
-        completed: ticket?.completed ?? false,
-        tech: ticket?.tech.toLowerCase() ?? 'new-ticket@example.com',
-    }
-
-    const form = useForm<insertTicketSchemaType>({
-        mode: 'onBlur',
-        resolver: zodResolver(insertTicketSchema),
-        defaultValues,
-    })
-
-    const {
-        execute: executeSave,
-        result: saveResult,
-        isPending: isSaving,
-        reset: resetSaveAction,
-    } = useAction(saveTicketAction, {
-        onSuccess({ data }) {
-            if (data?.message) {
-                toast({
-                    variant: "default",
-                    title: "Success! 🎉",
-                    description: data.message,
-                })
-            }
-        },
-        onError({ error }) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Save Failed",
-            })
+        if (!customerId && !ticketId) {
+            return (
+                <>
+                    <h2 className="text-2xl mb-2">Ticket ID or Customer ID required to load ticket form</h2>
+                    <BackButton title="Go Back" variant="default" />
+                </>
+            )
         }
-    })
 
-    async function submitForm(data: insertTicketSchemaType) {
-        executeSave(data)
+        const { getPermission, getUser } = getKindeServerSession()
+        const [managerPermission, user] = await Promise.all([
+            getPermission("manager"),
+            getUser(),
+        ])
+        const isManager = managerPermission?.isGranted
+
+        // New ticket form 
+        if (customerId) {
+            const customer = await getCustomer(parseInt(customerId))
+
+            if (!customer) {
+                return (
+                    <>
+                        <h2 className="text-2xl mb-2">Customer ID #{customerId} not found</h2>
+                        <BackButton title="Go Back" variant="default" />
+                    </>
+                )
+            }
+
+            if (!customer.active) {
+                return (
+                    <>
+                        <h2 className="text-2xl mb-2">Customer ID #{customerId} is not active.</h2>
+                        <BackButton title="Go Back" variant="default" />
+                    </>
+                )
+            }
+
+            // return ticket form 
+            if (isManager) {
+                kindeInit() // Initializes the Kinde Management API 
+                const { users } = await Users.getUsers()
+
+                const techs = users ? users.map(user => ({ id: user.email!, description: user.email! })) : []
+
+                return <TicketForm customer={customer} techs={techs} isManager={isManager} />
+            } else {
+                return <TicketForm customer={customer} />
+            }
+        }
+
+        // Edit ticket form 
+        if (ticketId) {
+            const ticket = await getTicket(parseInt(ticketId))
+
+            if (!ticket) {
+                return (
+                    <>
+                        <h2 className="text-2xl mb-2">Ticket ID #{ticketId} not found</h2>
+                        <BackButton title="Go Back" variant="default" />
+                    </>
+                )
+            }
+
+            const customer = await getCustomer(ticket.customerId)
+
+            // return ticket form 
+            if (isManager) {
+                kindeInit() // Initializes the Kinde Management API 
+                const { users } = await Users.getUsers()
+
+                const techs = users ? users.map(user => ({ id: user.email?.toLowerCase(), description: user.email?.toLowerCase() })) : []
+
+                return <TicketForm customer={customer} ticket={ticket} techs={techs} isManager={isManager} />
+            } else {
+                const isEditable = user.email?.toLowerCase() === ticket.tech.toLowerCase()
+
+                return <TicketForm customer={customer} ticket={ticket} isEditable={isEditable} />
+            }
+        }
+
+    } catch (e) {
+        if (e instanceof Error) {
+            Sentry.captureException(e)
+            throw e
+        }
     }
-
-    return (
-        <div className="flex flex-col gap-1 sm:px-8">
-            <DisplayServerActionResponse result={saveResult} />
-            <div>
-                <h2 className="text-2xl font-bold">
-                    {ticket?.id && isEditable
-                        ? `Edit Ticket # ${ticket.id}`
-                        : ticket?.id
-                            ? `View Ticket # ${ticket.id}`
-                            : "New Ticket Form"
-                    }
-                </h2>
-            </div>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(submitForm)}
-                    className="flex flex-col md:flex-row gap-4 md:gap-8"
-                >
-
-                    <div className="flex flex-col gap-4 w-full max-w-xs">
-
-                        <InputWithLabel<insertTicketSchemaType>
-                            fieldTitle="Title"
-                            nameInSchema="title"
-                            disabled={!isEditable}
-                        />
-
-                        {isManager && techs ? (
-                            <SelectWithLabel<insertTicketSchemaType>
-                                fieldTitle="Tech ID"
-                                nameInSchema="tech"
-                                data={[{ id: 'new-ticket@example.com', description: 'new-ticket@example.com' }, ...techs]}
-                            />
-                        ) : (
-                            <InputWithLabel<insertTicketSchemaType>
-                                fieldTitle="Tech"
-                                nameInSchema="tech"
-                                disabled={true}
-                            />
-                        )}
-
-                        {ticket?.id ? (
-                            <CheckboxWithLabel<insertTicketSchemaType>
-                                fieldTitle="Completed"
-                                nameInSchema="completed"
-                                message="Yes"
-                                disabled={!isEditable}
-                            />
-                        ) : null}
-
-                        <div className="mt-4 space-y-2">
-                            <h3 className="text-lg">Customer Info</h3>
-                            <hr className="w-4/5" />
-                            <p>{customer.firstName} {customer.lastName}</p>
-                            <p>{customer.address1}</p>
-                            {customer.address2 ? <p>{customer.address2}</p> : null}
-                            <p>{customer.city}, {customer.state} {customer.zip}</p>
-                            <hr className="w-4/5" />
-                            <p>{customer.email}</p>
-                            <p>Phone: {customer.phone}</p>
-                        </div>
-
-                    </div>
-
-                    <div className="flex flex-col gap-4 w-full max-w-xs">
-
-                        <TextAreaWithLabel<insertTicketSchemaType>
-                            fieldTitle="Description"
-                            nameInSchema="description"
-                            className="h-96"
-                            disabled={!isEditable}
-                        />
-
-                        {isEditable ? (
-                            <div className="flex gap-2">
-                                <Button
-                                    type="submit"
-                                    className="w-3/4"
-                                    variant="default"
-                                    title="Save"
-                                    disabled={isSaving}
-                                >
-                                    {isSaving ? (
-                                        <>
-                                            <LoaderCircle className="animate-spin" /> Saving
-                                        </>
-                                    ) : "Save"}
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    title="Reset"
-                                    onClick={() => {
-                                        form.reset(defaultValues)
-                                        resetSaveAction()
-                                    }}
-                                >
-                                    Reset
-                                </Button>
-                            </div>
-                        ) : null}
-
-                    </div>
-
-                </form>
-            </Form>
-
-        </div>
-    )
 }

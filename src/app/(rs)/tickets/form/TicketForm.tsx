@@ -27,6 +27,7 @@ type Props = {
         description: string,
     }[],
     isEditable?: boolean,
+    isManager?: boolean;
 }
 
 export default function TicketForm({
