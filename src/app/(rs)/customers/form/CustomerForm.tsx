@@ -90,7 +90,7 @@ export default function CustomerForm({ customer, isManager = false }: Props) {
                 })
             }
         },
-        onError() {
+        onError(_error) {
             toast({
                 variant: "destructive",
                 title: "Error",

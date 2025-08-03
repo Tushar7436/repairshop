@@ -11,7 +11,7 @@ type Props = {
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
 export function BackButton(
-    { title, variant, className, ...props }: Props
+    { title, variant, className }: Props
 ) {
     const router = useRouter()
     return (
@@ -20,7 +20,6 @@ export function BackButton(
             className={className}
             onClick={() => router.back()}
             title={title}
-            {...props}
         >{title}</Button>
     )
 }
