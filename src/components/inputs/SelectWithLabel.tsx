@@ -28,10 +28,11 @@ type Props<S> = {
     nameInSchema: keyof S & string,
     data: DataObj[],
     className?: string,
+    disabled?: boolean,
 }
 
 export function SelectWithLabel<S>({
-    fieldTitle, nameInSchema, data, className
+    fieldTitle, nameInSchema, data, className, disabled
 }: Props<S>) {
     const form = useFormContext()
 
@@ -56,6 +57,7 @@ export function SelectWithLabel<S>({
                             <SelectTrigger
                                 id={nameInSchema}
                                 className={`w-full max-w-xs ${className}`}
+                                disabled={disabled}
                             >
                                 <SelectValue placeholder="Select" />
                             </SelectTrigger>
