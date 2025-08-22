@@ -21,7 +21,7 @@ export default function NotFound() {
                     title="Page Not Found"
                 />
             </div>
-            <Link href="/tickets" className="text-center hover:underline">
+            <Link href="/" className="text-center hover:underline">
                 <h3>Go Home</h3>
             </Link>
         </div>

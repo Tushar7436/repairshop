@@ -15,3 +15,11 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+
+# Next Steps - 
+1. Modals and Intercepted Routes
+2. Admin Dashboard
+3. Email notification
+4. Ticket Progress Tracking
+5. customer Billing w/stripe

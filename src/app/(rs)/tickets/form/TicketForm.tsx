@@ -67,7 +67,7 @@ export default function TicketForm({
                 })
             }
         },
-        onError() {
+        onError(_error) {
             toast({
                 variant: "destructive",
                 title: "Error",
