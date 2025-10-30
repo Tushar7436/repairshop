@@ -12,6 +12,7 @@ const config: Config = {
 		extend: {
 			backgroundImage: {
 				'home-img': "url('/images/home-img.jpg')",
+				'rs-img': "url('/images/bg.png')",
 			},
 			colors: {
 				background: 'hsl(var(--background))',

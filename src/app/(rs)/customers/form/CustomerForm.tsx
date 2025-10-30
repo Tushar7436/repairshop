@@ -104,116 +104,143 @@ export default function CustomerForm({ customer, isManager = false }: Props) {
     }
 
     return (
-        <div className="flex flex-col gap-1 sm:px-8">
+        <div className="flex flex-col gap-6 sm:px-8 pb-8">
             <DisplayServerActionResponse result={saveResult} />
-            <div>
-                <h2 className="text-2xl font-bold">
+            
+            {/* Header */}
+            <div className="border-b border-white/10 pb-4">
+                <h2 className="text-3xl font-bold tracking-tight">
                     {customer?.id ? "Edit" : "New"} Customer {customer?.id ? `#${customer.id}` : "Form"}
                 </h2>
+                <p className="text-sm text-gray-400 mt-2">
+                    {customer?.id ? "Update customer information below" : "Fill in the details to create a new customer"}
+                </p>
             </div>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(submitForm)}
-                    className="flex flex-col md:flex-row gap-4 md:gap-8"
-                >
-                    <div className="flex flex-col gap-4 w-full max-w-xs">
 
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="First Name"
-                            nameInSchema="firstName"
-                        />
+            {/* Form Container */}
+            <div className="border border-white/10 rounded-lg bg-black/40 p-6 md:p-8 backdrop-blur-sm">
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(submitForm)}
+                        className="flex flex-col md:flex-row gap-8 md:gap-12"
+                    >
+                        <div className="flex flex-col gap-6 w-full max-w-xs">
 
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="Last Name"
-                            nameInSchema="lastName"
-                        />
+                            <InputWithLabel<insertCustomerSchemaType>
+                                fieldTitle="First Name"
+                                nameInSchema="firstName"
+                            />
 
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="Address 1"
-                            nameInSchema="address1"
-                        />
+                            <InputWithLabel<insertCustomerSchemaType>
+                                fieldTitle="Last Name"
+                                nameInSchema="lastName"
+                            />
 
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="Address 2"
-                            nameInSchema="address2"
-                        />
+                            {/* Address */}
+                            <div className="space-y-4 pt-2">
+                                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    Address Information
+                                </div>
+                                
+                                <InputWithLabel<insertCustomerSchemaType>
+                                    fieldTitle="Address 1"
+                                    nameInSchema="address1"
+                                />
 
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="City"
-                            nameInSchema="city"
-                        />
+                                <InputWithLabel<insertCustomerSchemaType>
+                                    fieldTitle="Address 2"
+                                    nameInSchema="address2"
+                                />
 
-                        <SelectWithLabel<insertCustomerSchemaType>
-                            fieldTitle="State"
-                            nameInSchema="state"
-                            data={StatesArray}
-                        />
+                                <InputWithLabel<insertCustomerSchemaType>
+                                    fieldTitle="City"
+                                    nameInSchema="city"
+                                />
 
-                    </div>
+                                <SelectWithLabel<insertCustomerSchemaType>
+                                    fieldTitle="State"
+                                    nameInSchema="state"
+                                    data={StatesArray}
+                                />
+                            </div>
 
-                    <div className="flex flex-col gap-4 w-full max-w-xs">
-
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="Zip Code"
-                            nameInSchema="zip"
-                        />
-
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="Email"
-                            nameInSchema="email"
-                        />
-
-                        <InputWithLabel<insertCustomerSchemaType>
-                            fieldTitle="Phone"
-                            nameInSchema="phone"
-                        />
-
-                        <TextAreaWithLabel<insertCustomerSchemaType>
-                            fieldTitle="Notes"
-                            nameInSchema="notes"
-                            className="h-40"
-                        />
-
-                        {isManager && customer?.id ? (
-                            <CheckboxWithLabel<insertCustomerSchemaType>
-                                fieldTitle="Active"
-                                nameInSchema="active"
-                                message="Yes"
-                            />) : null}
-
-                        <div className="flex gap-2">
-                            <Button
-                                type="submit"
-                                className="w-3/4"
-                                variant="default"
-                                title="Save"
-                                disabled={isSaving}
-                            >
-                                {isSaving ? (
-                                    <>
-                                        <LoaderCircle className="animate-spin" /> Saving
-                                    </>
-                                ) : "Save"}
-                            </Button>
-
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                title="Reset"
-                                onClick={() => {
-                                    form.reset(defaultValues)
-                                    resetSaveAction()
-                                }}
-                            >
-                                Reset
-                            </Button>
                         </div>
 
-                    </div>
+                        {/* Vertical Divider */}
+                        <div className="hidden md:block w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
 
-                </form>
-            </Form>
+                        {/* Right Column */}
+                        <div className="flex flex-col gap-6 w-full max-w-xs">
 
+                            <InputWithLabel<insertCustomerSchemaType>
+                                fieldTitle="Zip Code"
+                                nameInSchema="zip"
+                            />
+
+                            {/* Contact Group */}
+                            <div className="space-y-4 pt-2">
+                                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    Contact Information
+                                </div>
+
+                                <InputWithLabel<insertCustomerSchemaType>
+                                    fieldTitle="Email"
+                                    nameInSchema="email"
+                                />
+
+                                <InputWithLabel<insertCustomerSchemaType>
+                                    fieldTitle="Phone"
+                                    nameInSchema="phone"
+                                />
+                            </div>
+
+                            <TextAreaWithLabel<insertCustomerSchemaType>
+                                fieldTitle="Notes"
+                                nameInSchema="notes"
+                                className="h-40"
+                            />
+
+                            {isManager && customer?.id ? (
+                                <CheckboxWithLabel<insertCustomerSchemaType>
+                                    fieldTitle="Active"
+                                    nameInSchema="active"
+                                    message="Yes"
+                                />) : null}
+
+                            <div className="flex gap-3 pt-4">
+                                <Button
+                                    type="submit"
+                                    className="w-3/4 h-11 border border-white font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                                    variant="default"
+                                    title="Save"
+                                    disabled={isSaving}
+                                >
+                                    {isSaving ? (
+                                        <>
+                                            <LoaderCircle className="animate-spin mr-2" /> Saving...
+                                        </>
+                                    ) : "Save Customer"}
+                                </Button>
+
+                                <Button
+                                    type="button"
+                                    className=" h-11 transition-all border border-white duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                                    variant="destructive"
+                                    title="Reset"
+                                    onClick={() => {
+                                        form.reset(defaultValues)
+                                        resetSaveAction()
+                                    }}
+                                >
+                                    Reset
+                                </Button>
+                            </div>
+
+                        </div>
+
+                    </form>
+                </Form>
+            </div>
         </div>
     )
 }

@@ -29,16 +29,23 @@ export function NavButtonMenu({
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full"
+                    className="rounded-full hover:bg-zinc-800 transition-colors"
                 >
-                    <Icon className="h-[1.2rem] w-[1.2rem]" />
+                    <Icon className="h-[1.2rem] w-[1.2rem] text-gray-300" />
                     <span className="sr-only">{label}</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent 
+                align="end"
+                className="bg-zinc-950 border-gray-800 backdrop-blur-sm"
+            >
                 {choices.map(choice => (
-                    // using asChild make the component to pass it directly 
-                    <DropdownMenuItem key={choice.title} asChild>
+                    <DropdownMenuItem 
+                        key={choice.title} 
+                        // using asChild make the component to pass it directly
+                        asChild
+                        className="text-gray-300 hover:bg-zinc-800 hover:text-white focus:bg-zinc-800 focus:text-white cursor-pointer transition-colors"
+                    >
                         <Link href={choice.href}>
                             {choice.title}
                         </Link>
