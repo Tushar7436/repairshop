@@ -153,7 +153,7 @@ export default function TicketTable({ data }: Props) {
                 if (columnName === "tech" && value === "unassigned") {
                     return <span className="text-xs font-medium text-amber-400 bg-amber-950/30 px-2 py-1 rounded">Unassigned</span>
                 }
-                return <span className="text-gray-200">{value}</span>
+                return <span className="text-gray-200">{value as string}</span>
             }
         })
     })
