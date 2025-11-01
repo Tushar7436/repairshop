@@ -137,7 +137,7 @@ export default function TicketTable({ data }: Props) {
                 if (columnName === "completed") {
                     return (
                         <div className="grid place-content-center">
-                            {value === "OPEN" 
+                            {value === "OPEN"
                                 ? <div className="flex items-center gap-2">
                                     <CircleXIcon className="h-5 w-5 text-gray-600" />
                                     <span className="text-xs font-medium text-gray-500 bg-gray-900 px-2 py-1 rounded">Open</span>

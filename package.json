@@ -11,6 +11,7 @@
     "db:migrate": "tsx ./src/db/migrate.ts"
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.0",
     "@hookform/resolvers": "^5.0.1",
     "@kinde-oss/kinde-auth-nextjs": "^2.6.2",
     "@kinde/management-api-js": "^0.14.0",

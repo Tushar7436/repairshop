@@ -12,7 +12,7 @@ export default function NotFound() {
                 <h2 className="text-2xl">Page Not Found</h2>
                 <Image
                     className="m-0 rounded-xl"
-                    src="/images/not-found-1024x1024.png"
+                    src="/images/not-found.jpg"
                     width={300}
                     height={300}
                     sizes="300px"
@@ -21,6 +21,7 @@ export default function NotFound() {
                     title="Page Not Found"
                 />
             </div>
+            <div className="flex justify-center">We are working right now on this section will be opened later</div>
             <Link href="/" className="text-center hover:underline">
                 <h3>Go Home</h3>
             </Link>

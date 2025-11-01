@@ -25,7 +25,7 @@ export default function Navbar() {
         {/* Links - Desktop */}
         <ul className="hidden md:flex md:items-center md:space-x-6">
           <li>
-            <Link href="/">Home</Link>
+            <Link href="/docs">Docs</Link>
           </li>
           <li>
             <Link href="/tickets">Tickets</Link>
@@ -37,7 +37,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <ul className="md:hidden mt-4 space-y-2">
           <li className="p-3">
-            <Link href="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
+            <Link href="/docs" onClick={() => setIsMenuOpen(false)}>Docs</Link>
           </li>
           <li className="p-3">
             <Link href="/tickets" onClick={() => setIsMenuOpen(false)}>Tickets</Link>
