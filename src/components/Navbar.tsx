@@ -25,7 +25,7 @@ export default function Navbar() {
         {/* Links - Desktop */}
         <ul className="hidden md:flex md:items-center md:space-x-6">
           <li>
-            <Link href="/docs">Docs</Link>
+            <Link href="/devs">For devs</Link>
           </li>
           <li>
             <Link href="/tickets">Tickets</Link>

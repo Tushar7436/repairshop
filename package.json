@@ -30,6 +30,7 @@
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.42.0",
     "drizzle-zod": "^0.7.1",
+    "framer-motion": "^12.23.24",
     "lucide-react": "^0.487.0",
     "next": "15.3.0",
     "next-safe-action": "^8.0.0",
